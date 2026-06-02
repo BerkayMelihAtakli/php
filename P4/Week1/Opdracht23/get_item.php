@@ -1,6 +1,6 @@
 <?php
 // Verbinding maken met de database
-$conn = new mysqli("localhost", "root", "", "p3");
+$conn = new mysqli("localhost", "root", "", "p3_app");
 
 // Controleer of de verbinding werkt
 if ($conn->connect_error) {
