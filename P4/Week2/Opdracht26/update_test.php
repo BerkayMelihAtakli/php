@@ -1,34 +1,22 @@
 <?php
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "p3_app";
 
-$host = 'localhost';
-$user = 'root';
-$pass = '';
-$db   = 'p3_app';
-
-$conn = new mysqli($host, $user, $pass, $db);
-if ($conn->connect_error) {
-    die('Verbinding mislukt: ' . $conn->connect_error);
-}
-
-$hoeveelheid = 42;
+$datum = "2026-06-02";
 $id = 1;
 
+try {
+    $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-$stmt = $conn->prepare("UPDATE water SET hoeveelheid = ? WHERE ID = ?");
-if (!$stmt) {
-    die('Fout bij voorbereiden: ' . $conn->error);
+    $sql = "UPDATE water SET datum = ? WHERE ID = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute([$datum, $id]);
+
+    echo "Update uitgevoerd. Aantal gewijzigde rijen: " . $stmt->rowCount();
+} catch (PDOException $e) {
+    echo "Fout bij uitvoeren van de query: " . $e->getMessage();
 }
 
-$stmt->bind_param('ii', $hoeveelheid, $id);
-$stmt->execute();
-
-if ($stmt->error) {
-    echo 'Fout bij uitvoeren: ' . $stmt->error;
-} else {
-    echo 'UPDATE uitgevoerd. Aantal rijen aangepast: ' . $stmt->affected_rows;
-}
-
-$stmt->close();
-$conn->close();
-
-?>
