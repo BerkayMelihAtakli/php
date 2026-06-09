@@ -1,0 +1,22 @@
+SQL UPDATE QUERY - FOUT EN OPLOSSING
+
+FOUT:
+UPDATE jouw_tabel
+SET titel = 'Test'
+
+PROBLEEM:
+- Geen WHERE clause
+- Alle rijen in de tabel worden gewijzigd
+- Dataverlies!
+
+CORRECTE QUERY:
+UPDATE jouw_tabel
+SET titel = 'Test'
+WHERE id = 1
+
+WAAROM GEVAARLIJK:
+Zonder WHERE updaten alle rijen tegelijk. Dit kan niet ongedaan gemaakt worden!
+Je kunt de hele database verwoesten.
+
+REGEL:
+Altijd een WHERE clause gebruiken bij UPDATE!
