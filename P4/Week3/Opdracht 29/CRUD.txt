@@ -1,0 +1,24 @@
+CRUD in dit project
+
+Create
+- Data toevoegen met INSERT INTO ...
+- In deze opdracht nog niet aanwezig in P4/Week3/Opdracht 29
+
+Read
+- Data ophalen met SELECT ...
+- In P4/Week3/Opdracht 29/index.php
+- Voorbeeld: SELECT * FROM water
+
+Update
+- Data aanpassen met UPDATE ...
+- In deze opdracht nog niet aanwezig in P4/Week3/Opdracht 29
+
+Delete
+- Data verwijderen met DELETE FROM ... WHERE id = ?
+- In P4/Week3/Opdracht 29/delete.php
+
+Waarom handig?
+- Je weet welke code bij welke actie hoort
+- Je kunt sneller fouten vinden
+- Als een onderdeel mist, is de applicatie niet volledig CRUD
+- De applicatie kan nog deels werken, maar je kunt niet alles met de data doen
