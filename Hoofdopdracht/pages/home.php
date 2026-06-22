@@ -56,6 +56,7 @@ include __DIR__ . '/../includes/nav.php';
                     <th>Hoeveelheid</th>
                     <th>Eenheid</th>
                     <th>Datum</th>
+                    <th>Actie</th>
                 </tr>
             </thead>
             <tbody>
@@ -66,6 +67,7 @@ include __DIR__ . '/../includes/nav.php';
                         <td><?= htmlspecialchars($item['hoeveelheid']) ?></td>
                         <td><?= htmlspecialchars($item['eenheid']) ?></td>
                         <td><?= htmlspecialchars($item['datum']) ?></td>
+                        <td><a href="edit.php?id=<?= (int) $item['id'] ?>">Bewerken</a></td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
