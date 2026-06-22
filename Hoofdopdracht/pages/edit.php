@@ -6,13 +6,36 @@ $pageTitle = "Bewerken - $appNaam";
 
 require_once __DIR__ . '/../includes/db.php';
 
-$id   = $_GET['id'] ?? null;
-$item = null;
+// ID ophalen en valideren
+$id = $_GET['id'] ?? null;
 
 if (!$id || !is_numeric($id)) {
     header('Location: home.php');
     exit;
 }
+
+// POST: update verwerken
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $postId      = (int) ($_POST['id'] ?? 0);
+    $naam        = trim($_POST['naam'] ?? '');
+    $hoeveelheid = trim($_POST['hoeveelheid'] ?? '');
+    $eenheid     = trim($_POST['eenheid'] ?? '');
+    $datum       = trim($_POST['datum'] ?? '');
+
+    if ($pdo && $postId) {
+        $stmt = $pdo->prepare(
+            'UPDATE water SET naam = ?, hoeveelheid = ?, eenheid = ?, datum = ? WHERE id = ?'
+        );
+        $stmt->execute([$naam, (int) $hoeveelheid, $eenheid, $datum, $postId]);
+    }
+
+    $_SESSION['succes'] = 'Drinkmoment succesvol bijgewerkt!';
+    header('Location: home.php');
+    exit;
+}
+
+// GET: bestaande data ophalen
+$item = null;
 
 if ($pdo) {
     $stmt = $pdo->prepare('SELECT id, naam, hoeveelheid, eenheid, datum FROM water WHERE id = ?');
@@ -32,6 +55,8 @@ include __DIR__ . '/../includes/nav.php';
     <h2>Drinkmoment bewerken</h2>
 
     <form method="POST" action="edit.php?id=<?= (int) $item['id'] ?>">
+        <input type="hidden" name="id" value="<?= (int) $item['id'] ?>">
+
         <div>
             <label for="naam">Naam</label>
             <input type="text" id="naam" name="naam"
