@@ -1,19 +1,24 @@
 <?php
+session_start();
+
 $appNaam   = "Healthylife";
 $pageTitle = "Toevoegen - $appNaam";
 
-$fouten  = [];
-$succes  = false;
-$naam     = '';
+require_once __DIR__ . '/../includes/db.php';
+
+$fouten      = [];
+$naam        = '';
 $hoeveelheid = '';
-$eenheid  = 'ml';
+$eenheid     = 'ml';
+$datum       = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $naam        = trim($_POST['naam'] ?? '');
     $hoeveelheid = trim($_POST['hoeveelheid'] ?? '');
     $eenheid     = trim($_POST['eenheid'] ?? '');
+    $datum       = trim($_POST['datum'] ?? '');
 
-    
+   
     if ($naam === '') {
         $fouten[] = 'Naam is verplicht.';
     } elseif (strlen($naam) < 3) {
@@ -22,6 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $fouten[] = 'Naam mag maximaal 50 tekens bevatten.';
     }
 
+   
     if ($hoeveelheid === '') {
         $fouten[] = 'Hoeveelheid is verplicht.';
     } elseif (!is_numeric($hoeveelheid)) {
@@ -33,16 +39,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     if ($eenheid === '') {
         $fouten[] = 'Eenheid is verplicht.';
-    } elseif (strlen($eenheid) < 1) {
-        $fouten[] = 'Eenheid moet minimaal 1 teken bevatten.';
     } elseif (strlen($eenheid) > 10) {
         $fouten[] = 'Eenheid mag maximaal 10 tekens bevatten.';
     }
 
-    if (empty($fouten)) {
-        $succes = true;
+    if (!empty($fouten)) {
+        $_SESSION['fouten'] = $fouten;
+        header('Location: toevoegen.php');
+        exit;
     }
+
+    if (!$pdo) {
+        $_SESSION['fouten'] = ['Kan geen verbinding maken met de database.'];
+        header('Location: toevoegen.php');
+        exit;
+    }
+
+    $stmt = $pdo->prepare(
+        'INSERT INTO water (naam, hoeveelheid, eenheid, datum) VALUES (:naam, :hoeveelheid, :eenheid, :datum)'
+    );
+    $stmt->execute([
+        ':naam'        => $naam,
+        ':hoeveelheid' => (int) $hoeveelheid,
+        ':eenheid'     => $eenheid,
+        ':datum'       => $datum,
+    ]);
+
+    $_SESSION['succes'] = 'Drinkmoment succesvol opgeslagen!';
+    header('Location: home.php');
+    exit;
 }
+
+// Flash messages ophalen en wissen
+$flashFouten = $_SESSION['fouten'] ?? [];
+$flashSucces = $_SESSION['succes'] ?? '';
+unset($_SESSION['fouten'], $_SESSION['succes']);
 
 include __DIR__ . '/../includes/header.php';
 include __DIR__ . '/../includes/nav.php';
@@ -50,48 +81,46 @@ include __DIR__ . '/../includes/nav.php';
 <main>
     <h2>Drinkmoment toevoegen</h2>
 
-    <?php if (!empty($fouten)): ?>
-        <div class="fouten">
+    <?php if (!empty($flashFouten)): ?>
+        <div class="alert alert-error">
             <p><strong>Controleer de volgende punten:</strong></p>
             <ul>
-                <?php foreach ($fouten as $fout): ?>
+                <?php foreach ($flashFouten as $fout): ?>
                     <li><?= htmlspecialchars($fout) ?></li>
                 <?php endforeach; ?>
             </ul>
         </div>
     <?php endif; ?>
 
-    <?php if ($succes): ?>
-        <div class="succes">
-            <p><strong>Drinkmoment succesvol toegevoegd!</strong></p>
-            <ul>
-                <li><strong>Naam:</strong> <?= htmlspecialchars($naam) ?></li>
-                <li><strong>Hoeveelheid:</strong> <?= htmlspecialchars($hoeveelheid) ?> <?= htmlspecialchars($eenheid) ?></li>
-            </ul>
-            <p><a href="toevoegen.php">Nog een drinkmoment toevoegen</a></p>
+    <?php if ($flashSucces): ?>
+        <div class="alert alert-succes">
+            <p><?= htmlspecialchars($flashSucces) ?></p>
         </div>
-    <?php else: ?>
-        <form method="POST" action="toevoegen.php">
-            <div>
-                <label for="naam">Naam</label>
-                <input type="text" id="naam" name="naam"
-                       value="<?= htmlspecialchars($naam) ?>">
-            </div>
-
-            <div>
-                <label for="hoeveelheid">Hoeveelheid</label>
-                <input type="text" id="hoeveelheid" name="hoeveelheid"
-                       value="<?= htmlspecialchars($hoeveelheid) ?>">
-            </div>
-
-            <div>
-                <label for="eenheid">Eenheid</label>
-                <input type="text" id="eenheid" name="eenheid"
-                       value="<?= htmlspecialchars($eenheid) ?>">
-            </div>
-
-            <button type="submit">Verstuur</button>
-        </form>
     <?php endif; ?>
+
+    <form method="POST" action="toevoegen.php">
+        <div>
+            <label for="naam">Naam</label>
+            <input type="text" id="naam" name="naam" value="">
+        </div>
+
+        <div>
+            <label for="hoeveelheid">Hoeveelheid</label>
+            <input type="text" id="hoeveelheid" name="hoeveelheid" value="">
+        </div>
+
+        <div>
+            <label for="eenheid">Eenheid</label>
+            <input type="text" id="eenheid" name="eenheid" value="ml">
+        </div>
+
+        <div>
+            <label for="datum">Datum</label>
+            <input type="date" id="datum" name="datum"
+                   value="<?= htmlspecialchars($datum) ?>">
+        </div>
+
+        <button type="submit">Opslaan</button>
+    </form>
 </main>
 <?php include __DIR__ . '/../includes/footer.php'; ?>

@@ -1,17 +1,24 @@
 <?php
-$appNaam = "Healthylife";
+session_start();
+
+$appNaam   = "Healthylife";
 $pageTitle = "Home - $appNaam";
 
-include __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../includes/db.php';
 
-$items = [];
+
+$flashSucces = $_SESSION['succes'] ?? '';
+$flashFout   = $_SESSION['fout']   ?? '';
+unset($_SESSION['succes'], $_SESSION['fout']);
+
+$items   = [];
 $dbError = '';
 
 if ($pdo) {
     try {
-        $statement = $pdo->prepare('SELECT id, naam, hoeveelheid, eenheid FROM water ORDER BY id ASC');
-        $statement->execute();
-        $items = $statement->fetchAll(PDO::FETCH_ASSOC);
+        $stmt = $pdo->prepare('SELECT id, naam, hoeveelheid, eenheid, datum FROM water ORDER BY id ASC');
+        $stmt->execute();
+        $items = $stmt->fetchAll();
     } catch (\PDOException $e) {
         $dbError = 'Er is iets mis met de database. Controleer of de tabel bestaat.';
     }
@@ -26,6 +33,18 @@ include __DIR__ . '/../includes/nav.php';
     <h2>Healthylife Tracker</h2>
     <p>Hier zie je een overzicht van je drinkmomenten.</p>
 
+    <?php if ($flashSucces): ?>
+        <div class="alert alert-succes">
+            <p><?= htmlspecialchars($flashSucces) ?></p>
+        </div>
+    <?php endif; ?>
+
+    <?php if ($flashFout): ?>
+        <div class="alert alert-error">
+            <p><?= htmlspecialchars($flashFout) ?></p>
+        </div>
+    <?php endif; ?>
+
     <?php if ($dbError): ?>
         <p class="error"><?= htmlspecialchars($dbError) ?></p>
     <?php elseif (!empty($items)): ?>
@@ -36,6 +55,7 @@ include __DIR__ . '/../includes/nav.php';
                     <th>Naam</th>
                     <th>Hoeveelheid</th>
                     <th>Eenheid</th>
+                    <th>Datum</th>
                 </tr>
             </thead>
             <tbody>
@@ -45,6 +65,7 @@ include __DIR__ . '/../includes/nav.php';
                         <td><?= htmlspecialchars($item['naam']) ?></td>
                         <td><?= htmlspecialchars($item['hoeveelheid']) ?></td>
                         <td><?= htmlspecialchars($item['eenheid']) ?></td>
+                        <td><?= htmlspecialchars($item['datum']) ?></td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
