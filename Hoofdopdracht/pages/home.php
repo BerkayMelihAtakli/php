@@ -67,7 +67,11 @@ include __DIR__ . '/../includes/nav.php';
                         <td><?= htmlspecialchars($item['hoeveelheid']) ?></td>
                         <td><?= htmlspecialchars($item['eenheid']) ?></td>
                         <td><?= htmlspecialchars($item['datum']) ?></td>
-                        <td><a href="edit.php?id=<?= (int) $item['id'] ?>">Bewerken</a></td>
+                        <td>
+                            <a href="edit.php?id=<?= (int) $item['id'] ?>">Bewerken</a>
+                            <a href="delete.php?id=<?= (int) $item['id'] ?>"
+                               onclick="return confirm('Weet je zeker dat je dit item wilt verwijderen?')">Verwijderen</a>
+                        </td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
