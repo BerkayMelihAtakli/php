@@ -1,0 +1,22 @@
+Hoofdopdracht 12 - Reflectie
+============================
+
+Welk onderdeel vond je het moeilijkst?
+---------------------------------------
+De database-koppeling was het moeilijkst.
+De kolomnamen in de code kwamen niet overeen met de echte tabel in de database.
+De kolom 'naam' bestond niet in de tabel 'water'.
+
+Waar ging het mis?
+-------------------
+De tabel 'water' had geen 'naam'-kolom.
+De foutmelding was: Unknown column 'naam' in field list (SQLSTATE[42S22]).
+Ook ontbrak de kolom 'datum' in de eerste versie van de tabel.
+
+Hoe heb je dit opgelost?
+--------------------------
+Met het volgende SQL-commando in phpMyAdmin de ontbrekende kolom toegevoegd:
+ALTER TABLE water ADD naam VARCHAR(50) NOT NULL AFTER ID;
+
+Daarna zijn alle queries, formulieren en overzichtspagina's aangepast
+zodat ook de kolom 'datum' correct wordt meegenomen.
