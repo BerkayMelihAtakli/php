@@ -1,0 +1,13 @@
+Login flow
+
+1. Gebruiker vult gebruikersnaam en wachtwoord in op het formulier.
+2. Het formulier stuurt de gegevens via POST naar de server.
+3. PHP haalt de gebruiker op uit de database op basis van de gebruikersnaam.
+4. PHP controleert het wachtwoord met password_verify().
+5. Als het klopt, wordt de gebruiker ingelogd en krijgt hij toegang.
+
+Waar wordt het wachtwoord gecontroleerd?
+Op de server in PHP, niet in de browser.
+
+Waarom is dit server-side logica?
+Omdat de database en de hash alleen op de server staan. De gebruiker mag daar nooit bij kunnen.
