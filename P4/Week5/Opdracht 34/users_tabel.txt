@@ -1,0 +1,41 @@
+Tabel naam: users
+
+Kolommen:
+
+1. id
+   Data type: INT, AUTO_INCREMENT, PRIMARY KEY
+   Waarom: Elke gebruiker heeft een uniek nummer nodig. Het id verandert nooit, ook als de username verandert.
+
+2. username
+   Data type: VARCHAR(50), NOT NULL, UNIQUE
+   Waarom: De naam waarmee een gebruiker inlogt. UNIQUE zorgt dat twee gebruikers niet dezelfde naam kunnen hebben.
+
+3. password
+   Data type: VARCHAR(255), NOT NULL
+   Waarom: We slaan het wachtwoord op als een hash via password_hash(). Zo kunnen aanvallers het echte wachtwoord niet lezen als de database wordt gestolen.
+
+4. email
+   Data type: VARCHAR(100), NOT NULL, UNIQUE
+   Waarom: Nodig voor wachtwoord-herstel. UNIQUE omdat een e-mailadres bij maar 1 account hoort.
+
+5. created_at
+   Data type: DATETIME, DEFAULT CURRENT_TIMESTAMP
+   Waarom: Bijhouden wanneer het account is aangemaakt.
+
+SQL voorbeeld:
+
+CREATE TABLE users (
+    id         INT AUTO_INCREMENT PRIMARY KEY,
+    username   VARCHAR(50)  NOT NULL UNIQUE,
+    password   VARCHAR(255) NOT NULL,
+    email      VARCHAR(100) NOT NULL UNIQUE,
+    created_at DATETIME     DEFAULT CURRENT_TIMESTAMP
+);
+
+Vragen:
+
+Waarom heeft een gebruiker een eigen ID nodig?
+Het id is een stabiele unieke sleutel. Gebruikersnamen kunnen veranderen, maar het id blijft altijd hetzelfde. Andere tabellen verwijzen via dit id naar de gebruiker.
+
+Waarom slaan we een wachtwoord niet als gewone tekst op?
+Als de database wordt gehackt kan een aanvaller direct bij alle wachtwoorden. Met password_hash() is het wachtwoord onleesbaar opgeslagen.
